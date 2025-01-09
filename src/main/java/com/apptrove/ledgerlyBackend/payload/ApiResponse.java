@@ -1,8 +1,14 @@
 package com.apptrove.ledgerlyBackend.payload;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@Data
+@AllArgsConstructor
+@Getter
+@Setter
+@RequiredArgsConstructor
 public class ApiResponse<T> {
 
 	private T respObject;

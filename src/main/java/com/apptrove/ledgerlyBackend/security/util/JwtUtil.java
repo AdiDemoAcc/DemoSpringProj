@@ -5,6 +5,7 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +41,7 @@ public class JwtUtil {
 		return createToken(claims,user.getUsername());
 	}
 
+	@SuppressWarnings("deprecation")
 	private String createToken(Map<String, Object> claims, String username) {
 		return Jwts.builder()
 				.setClaims(claims)
@@ -56,9 +58,15 @@ public class JwtUtil {
 	}
 	
 	public String extractUsername(String token) {
-		return extractAllClaims(token).getSubject();
+		return extractClaims(token,Claims::getSubject);
+	}
+	
+	private <T> T extractClaims(String token, Function<Claims, T> claimsResolver) {
+		final Claims claims = extractAllClaims(token);
+		return claimsResolver.apply(claims);
 	}
 
+	@SuppressWarnings("deprecation")
 	private Claims extractAllClaims(String token) {
 		return Jwts.parser()
 				.setSigningKey(getSignInKey())
@@ -73,7 +81,7 @@ public class JwtUtil {
 	}
 
 	private boolean isTokenExpired(String token) {
-		return extractAllClaims(token).getExpiration().after(new Date());
+		return extractClaims(token , Claims::getExpiration).before(new Date());
 	}
 	
 }
