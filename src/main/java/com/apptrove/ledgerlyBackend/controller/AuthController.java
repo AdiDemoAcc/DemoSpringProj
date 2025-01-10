@@ -1,6 +1,7 @@
 package com.apptrove.ledgerlyBackend.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,13 +25,16 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @Autowired
+    private Environment env;
 	
     @PostMapping(path = "/login")
     public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginModel loginModel) {
     	Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginModel.getUsername(), loginModel.getPassword()));
     	String token = jwtUtil.generateToken(authentication);
-    	return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(token, "Success", "USER_AUTHENTICATED"),HttpStatus.OK);
+    	return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(token, env.getProperty("login.success.message"), env.getProperty("login.user.authenticated")),HttpStatus.OK);
     }
     
 }

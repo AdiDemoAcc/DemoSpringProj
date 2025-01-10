@@ -79,6 +79,7 @@
             </Root>
             <Logger name="com.apptrove" level="info"/>
             <Logger name="org.springframework" level="info"/>
+            <Logger name="com.apptrove.ledgerlyBackend.controller" level="debug"/>
         </Loggers>
     </SpringProfile>
 </Configuration>
