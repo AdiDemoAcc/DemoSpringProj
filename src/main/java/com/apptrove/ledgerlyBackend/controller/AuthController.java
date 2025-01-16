@@ -1,5 +1,9 @@
 package com.apptrove.ledgerlyBackend.controller;
 
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -15,10 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 import com.apptrove.ledgerlyBackend.payload.ApiResponse;
 import com.apptrove.ledgerlyBackend.payload.LoginModel;
 import com.apptrove.ledgerlyBackend.security.util.JwtUtil;
+import com.apptrove.ledgerlyBackend.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RequestMapping("/ldgr/auth")
 @RestController
 public class AuthController {
+	
+	private static final Logger logger = LogManager.getLogger(AuthController.class);
 
 	@Autowired
     private AuthenticationManager authenticationManager;
@@ -27,14 +36,67 @@ public class AuthController {
     private JwtUtil jwtUtil;
     
     @Autowired
+    private UserService userService;
+    
+    @Autowired
     private Environment env;
 	
     @PostMapping(path = "/login")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginModel loginModel) {
-    	Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginModel.getUsername(), loginModel.getPassword()));
-    	String token = jwtUtil.generateToken(authentication);
-    	return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(token, env.getProperty("login.success.message"), env.getProperty("login.user.authenticated")),HttpStatus.OK);
+    public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest) {
+    	try {
+    		Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginModel.getUsername(), loginModel.getPassword()));
+    		boolean userLoggedIn = userService.isUserLoggedIn(loginModel.getUsername());
+    		
+    		if (loginModel.isClearSession() && userLoggedIn) {
+				userService.clearLastSession(loginModel.getUsername());
+			}
+    		
+        	if (!userLoggedIn || loginModel.isClearSession()) {
+        		httpServletRequest.getSession().invalidate();
+        		httpServletRequest.getSession(true);
+        		String domainName = httpServletRequest.getServerName();
+        		String ipAddress = httpServletRequest.getRemoteAddr();
+        		String sessionId = httpServletRequest.getSession().getId();
+        		String token = jwtUtil.generateToken(authentication);
+        		userService.loginUser(loginModel.getUsername(), domainName, sessionId, ipAddress,token);
+        		httpServletRequest.getSession().setAttribute("token", token);
+            	return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(token, env.getProperty("login.success.message"), env.getProperty("login.user.authenticated")),HttpStatus.OK);
+			} else {
+				return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>("User Already Logged In", env.getProperty("login.user.already.logged.message"), env.getProperty("login.user.failed")),HttpStatus.CONFLICT);
+			}
+    		
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(e.getMessage(), env.getProperty("login.fail.message"), env.getProperty("login.user.notAuthenticated")),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
     }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logoutUser(@RequestBody Map<String,Object> reqObj,HttpServletRequest httpServletRequest) {
+        
+        try {
+			String token = httpServletRequest.getSession().getAttribute("token") != null ? httpServletRequest.getSession().getAttribute("token").toString() : "";
+			if (token != null && token != "" && reqObj.containsKey("username")) {
+				String sessionId = httpServletRequest.getSession().getId();
+				String domainName = httpServletRequest.getServerName();
+				String ipAddress = httpServletRequest.getRemoteAddr();
+				String username = reqObj.get("username").toString();
+				
+				boolean flag = this.userService.logoutUser(username, token, domainName, ipAddress, sessionId);
+				if (flag) {
+					return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>("User logout successfull", env.getProperty("logout.success.message"), env.getProperty("logout.user.success.code")),HttpStatus.OK);
+				} else {
+					return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>("User Session Expired", env.getProperty("logout.fail.message"), env.getProperty("logout.user.fail.code")),HttpStatus.CONFLICT);
+				}
+			}
+			return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>("User Session Expired", env.getProperty("logout.fail.message"), env.getProperty("logout.user.fail.code")),HttpStatus.CONFLICT);
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(e.getMessage(), env.getProperty("logout.fail.message"), env.getProperty("logout.user.fail.code")),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+        
+    }
+    
     
 }

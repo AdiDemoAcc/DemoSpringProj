@@ -13,7 +13,7 @@ public class SecurityLog {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private int id;
+	private Integer id;
 	
 	@Column(name = "user_id")
 	private Integer userId;
@@ -38,5 +38,8 @@ public class SecurityLog {
 	
 	@Column(name = "ip_address")
 	private String ipAddress;
+	
+	@Column(name = "user_token")
+	private String userToken;
 	
 }
