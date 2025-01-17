@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UsernameNotFoundException.class)
 	public ResponseEntity< ApiResponse<String>> usernameNotFoundExceptionHandler(UsernameNotFoundException ex) {
 		ApiResponse<String> apiResponse = new ApiResponse<String>();
-		apiResponse.setRespObject(null);
+		apiResponse.setRespObject(ex.getMessage());
 		apiResponse.setErrorMsg(ex.getMessage());
 		apiResponse.setErrorCd("USER_NOT_FOUND");
 		

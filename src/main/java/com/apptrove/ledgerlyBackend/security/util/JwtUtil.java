@@ -17,19 +17,24 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 
 @Component
 public class JwtUtil {
 
-	@Value("${jwt-secret}")
-	private String jwtSecret;
+	private final JwtSecretManager jwtSecretManager;
 	
+	public JwtUtil(JwtSecretManager jwtSecretManager) {
+		super();
+		this.jwtSecretManager = jwtSecretManager;
+	}
+
 	@Value("${jwt-expiry}")
 	private Long jwtExpiryTime;
 	
-	public String generateToken(Authentication authentication) {
+	public String generateToken(Authentication authentication,HttpServletResponse httpServletResponse) {
 		Map<String, Object> claims = new HashMap<String, Object>();
 		User user = (User) authentication.getPrincipal();
 		claims.put("username",user.getUsername());
@@ -53,7 +58,7 @@ public class JwtUtil {
 	}
 
 	private Key getSignInKey() {
-		byte[] decodeKey = Base64.getDecoder().decode(jwtSecret);
+		byte[] decodeKey = Base64.getDecoder().decode(jwtSecretManager.getJwtSecret());
 		return Keys.hmacShaKeyFor(decodeKey);
 	}
 	

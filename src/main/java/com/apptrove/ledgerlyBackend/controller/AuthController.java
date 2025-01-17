@@ -22,6 +22,7 @@ import com.apptrove.ledgerlyBackend.security.util.JwtUtil;
 import com.apptrove.ledgerlyBackend.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/ldgr/auth")
 @RestController
@@ -42,7 +43,7 @@ public class AuthController {
     private Environment env;
 	
     @PostMapping(path = "/login")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) {
     	try {
     		Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginModel.getUsername(), loginModel.getPassword()));
@@ -58,7 +59,7 @@ public class AuthController {
         		String domainName = httpServletRequest.getServerName();
         		String ipAddress = httpServletRequest.getRemoteAddr();
         		String sessionId = httpServletRequest.getSession().getId();
-        		String token = jwtUtil.generateToken(authentication);
+        		String token = jwtUtil.generateToken(authentication,httpServletResponse);
         		userService.loginUser(loginModel.getUsername(), domainName, sessionId, ipAddress,token);
         		httpServletRequest.getSession().setAttribute("token", token);
             	return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(token, env.getProperty("login.success.message"), env.getProperty("login.user.authenticated")),HttpStatus.OK);

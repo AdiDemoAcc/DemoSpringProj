@@ -11,6 +11,6 @@ public class LoginModel {
 	
 	private String password;
 	
-	private boolean clearSession;
+	private boolean clearSession = false;
 
 }
