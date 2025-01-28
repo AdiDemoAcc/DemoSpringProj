@@ -9,13 +9,13 @@ public class TransactionMakerModel {
 
 	private Integer transactionId;
 	
-	private Date transactionDt;
+	private Date transactionDate;
 	
 	private Integer aptmntId;
 	
-	private Date startDt;
+	private Date startDate;
 	
-	private Date endDt;
+	private Date endDate;
 	
 	private String transactionType;
 	

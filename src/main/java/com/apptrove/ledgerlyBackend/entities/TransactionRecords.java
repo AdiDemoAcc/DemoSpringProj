@@ -58,6 +58,6 @@ public class TransactionRecords {
 	@Column(name = "author_dt")
 	private Date authorDt;
 	
-	@Column(name = "start_dt")
-	private String author_rmrks;
+	@Column(name = "author_rmrks")
+	private String authorRmrks;
 }
