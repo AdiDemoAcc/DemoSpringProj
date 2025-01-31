@@ -13,6 +13,8 @@ public class TransactionAuthorModel {
 	
 	private Integer authorCd;
 	
+	private Integer authStatus;
+	
 	private String authorRmrks;
 	
 }

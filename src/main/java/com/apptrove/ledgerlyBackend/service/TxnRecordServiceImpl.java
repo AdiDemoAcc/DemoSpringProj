@@ -1,7 +1,9 @@
 package com.apptrove.ledgerlyBackend.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -49,6 +51,7 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 		return respObject;
 	}
 
+	@Transactional
 	@Override
 	public Map<String, Object> authorTransactionRecord(TransactionAuthorModel transactionAuthorModel) {
 		TransactionRecords transactionRecords = new TransactionRecords();
@@ -57,18 +60,43 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 			logger.info("Inside authorTransactionRecord method:::::::::::::::::::::::::::::::::::::::::::::");
 			transactionRecords = txnRecordsRepository.findById(transactionAuthorModel.getTransactionId())
 					.orElseThrow(() -> new ResourceNotFoundException("Transaction with Id: "+transactionAuthorModel.getTransactionId()+" not found"));
-			transactionRecords.setAuthorCd(transactionAuthorModel.getAuthorCd());
-			transactionRecords.setAuthorDt(new Date());
-			transactionRecords.setAuthorRmrks(transactionAuthorModel.getAuthorRmrks());
-			txnRecordsRepository.saveAndFlush(transactionRecords);
-			respObject.put("transactionRecords", transactionRecords);
-			respObject.put("flag", true);
+			if (transactionRecords.getAuthStatus() == 0) {
+				transactionRecords.setAuthorCd(transactionAuthorModel.getAuthorCd());
+				transactionRecords.setAuthorDt(new Date());
+				transactionRecords.setAuthStatus(transactionAuthorModel.getAuthStatus());
+				transactionRecords.setAuthorRmrks(transactionAuthorModel.getAuthorRmrks());
+				txnRecordsRepository.saveAndFlush(transactionRecords);
+				respObject.put("transactionRecords", transactionRecords);
+				respObject.put("message", "Record Updation Successful!");
+				respObject.put("flag", true);
+				logger.info("Record Updation Successful for record Id: "+transactionAuthorModel.getTransactionId());
+			} else {
+				respObject.put("transactionRecords", null);
+				respObject.put("message", "Record Already Authored!");
+				respObject.put("flag", false);
+				logger.info("Record Already Authored for record Id: "+transactionAuthorModel.getTransactionId());
+			}
 		} catch (Exception e) {
 			logger.error("An error occurred: "+e.getMessage());
+			respObject.put("message", e.getMessage());
 			respObject.put("flag", false);
 			e.printStackTrace();
 		}
 		return respObject;
+	}
+
+	@Override
+	public List<TransactionRecords> getUnauthorizedTxnList() {
+		List<TransactionRecords> txnRecList = new ArrayList<TransactionRecords>();
+		try {
+			logger.info("Inside getUnauthorizedTxnList method::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			txnRecList = txnRecordsRepository.findByAuthStatus(0);
+			logger.info("Exiting getUnauthorizedTxnList method:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			e.printStackTrace();
+		}
+		return txnRecList;
 	}
 
 }

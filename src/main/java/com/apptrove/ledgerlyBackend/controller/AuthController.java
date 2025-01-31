@@ -25,7 +25,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@RequestMapping("/ldgr/auth")
+@RequestMapping("/ldgr/T1000")
 @RestController
 public class AuthController {
 	
@@ -43,7 +43,7 @@ public class AuthController {
     @Autowired
     private Environment env;
 	
-    @PostMapping(path = "/login")
+    @PostMapping(path = "/S1001")
     public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) {
     	try {
     		Authentication authentication = authenticationManager.authenticate(
@@ -74,7 +74,7 @@ public class AuthController {
 		}
     }
     
-    @PostMapping("/logout")
+    @PostMapping("/S1002")
     public ResponseEntity<ApiResponse<String>> logoutUser(@RequestBody Map<String,Object> reqObj,HttpServletRequest httpServletRequest) {
     	String sessionId = "";
         try {

@@ -28,15 +28,13 @@ import org.springframework.security.core.Authentication;
 @Component
 public class JwtUtil {
 
-	private final JwtSecretManager jwtSecretManager;
-	
-	public JwtUtil(JwtSecretManager jwtSecretManager) {
-		super();
-		this.jwtSecretManager = jwtSecretManager;
-	}
+//	private final JwtSecretManager jwtSecretManager;
 
 	@Value("${jwt-expiry}")
 	private Long jwtExpiryTime;
+	
+	@Value("${jwt-secret}")
+	private String jwtSecret;
 	
 	public String generateToken(Authentication authentication,HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) {
 		Map<String, Object> claims = new HashMap<String, Object>();
@@ -79,7 +77,7 @@ public class JwtUtil {
 	}
 
 	private Key getSignInKey() {
-		byte[] decodeKey = Base64.getDecoder().decode(jwtSecretManager.getJwtSecret());
+		byte[] decodeKey = Base64.getDecoder().decode(jwtSecret);
 		return Keys.hmacShaKeyFor(decodeKey);
 	}
 	

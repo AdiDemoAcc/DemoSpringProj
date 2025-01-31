@@ -51,6 +51,9 @@ public class TransactionRecords {
 	@Column(name = "maker_rmrks")
 	private String makerRmrks;
 	
+	@Column(name = "auth_status")
+	private Integer authStatus;
+	
 	@Column(name = "author_cd")
 	private Integer authorCd;
 	
