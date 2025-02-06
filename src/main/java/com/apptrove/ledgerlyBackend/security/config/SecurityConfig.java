@@ -31,7 +31,7 @@ public class SecurityConfig {
 	@Autowired
 	private UserDetailsService userDetailsService;
 	
-	private final String[] allowedOrigins = {"http://localhost:8181"};
+	private final String[] allowedOrigins = {"http://localhost:8181,http://localhost:5173/"};
 	private final String[] allowedHeaders = {"Authorization","Content-Type"};
 	private final String[] allowedMethods = {"GET","POST"};
 	

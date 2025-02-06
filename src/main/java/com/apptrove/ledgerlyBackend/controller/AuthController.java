@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @RequestMapping("/ldgr/T1000")
 @RestController
+@CrossOrigin
 public class AuthController {
 	
 	private static final Logger logger = LogManager.getLogger(AuthController.class);
@@ -65,12 +67,12 @@ public class AuthController {
         		httpServletRequest.getSession().setAttribute("token", token);
             	return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(token, env.getProperty("login.success.message"), env.getProperty("login.user.authenticated")),HttpStatus.OK);
 			} else {
-				return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>("User Already Logged In", env.getProperty("login.user.already.logged.message"), env.getProperty("login.user.failed")),HttpStatus.CONFLICT);
+				return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>("User Already Logged In", env.getProperty("login.user.already.logged.message"), env.getProperty("login.user.failed")),HttpStatus.OK );
 			}
     		
 		} catch (Exception e) {
 			logger.error("An error occurred: "+e.getMessage());
-			return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(e.getMessage(), env.getProperty("login.fail.message"), env.getProperty("login.user.notAuthenticated")),HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(e.getMessage(), env.getProperty("login.fail.message"), env.getProperty("login.user.notAuthenticated")),HttpStatus.OK);
 		}
     }
     
