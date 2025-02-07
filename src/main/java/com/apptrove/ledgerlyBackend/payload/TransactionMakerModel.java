@@ -21,6 +21,8 @@ public class TransactionMakerModel {
 	
 	private Long transactionAmnt;
 	
+	private String transactionCategory;
+	
 	private Integer makerCd;
 	
 	private Date makerDt;

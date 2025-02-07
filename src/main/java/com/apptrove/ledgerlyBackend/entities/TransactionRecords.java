@@ -41,6 +41,9 @@ public class TransactionRecords {
 	@Column(name = "txn_amnt")
 	private Long transactionAmnt;
 	
+	@Column(name = "txn_category")
+	private String transactionCategory;
+	
 	@Column(name = "maker_cd")
 	private Integer makerCd;
 	
