@@ -1,5 +1,6 @@
 package com.apptrove.ledgerlyBackend.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apptrove.ledgerlyBackend.payload.ApiResponse;
 import com.apptrove.ledgerlyBackend.payload.LoginModel;
+import com.apptrove.ledgerlyBackend.payload.UserDTO;
 import com.apptrove.ledgerlyBackend.security.util.JwtUtil;
 import com.apptrove.ledgerlyBackend.service.UserService;
 
@@ -46,7 +48,8 @@ public class AuthController {
     private Environment env;
 	
     @PostMapping(path = "/S1001")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) {
+    	Map<String, Object> respObject = new HashMap<String, Object>();
     	try {
     		Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginModel.getUsername(), loginModel.getPassword()));
@@ -63,16 +66,19 @@ public class AuthController {
         		String ipAddress = httpServletRequest.getRemoteAddr();
         		String sessionId = httpServletRequest.getSession().getId();
         		String token = jwtUtil.generateToken(authentication,httpServletRequest,httpServletResponse);
-        		userService.loginUser(loginModel.getUsername(), domainName, sessionId, ipAddress,token);
+        		UserDTO user = userService.loginUser(loginModel.getUsername(), domainName, sessionId, ipAddress,token);
         		httpServletRequest.getSession().setAttribute("token", token);
-            	return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(token, env.getProperty("login.success.message"), env.getProperty("login.user.authenticated")),HttpStatus.OK);
+        		respObject.put("user", user);
+        		respObject.put("token", token);
+        		
+            	return new ResponseEntity<ApiResponse<Map<String, Object>>>(new ApiResponse<Map<String, Object>>(respObject, env.getProperty("login.success.message"), env.getProperty("login.user.authenticated")),HttpStatus.OK);
 			} else {
-				return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>("User Already Logged In", env.getProperty("login.user.already.logged.message"), env.getProperty("login.user.failed")),HttpStatus.OK );
+				return new ResponseEntity<ApiResponse<Map<String, Object>>>(new ApiResponse<Map<String, Object>>(null, env.getProperty("login.user.already.logged.message"), env.getProperty("login.user.failed")),HttpStatus.OK );
 			}
     		
 		} catch (Exception e) {
 			logger.error("An error occurred: "+e.getMessage());
-			return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(e.getMessage(), env.getProperty("login.fail.message"), env.getProperty("login.user.notAuthenticated")),HttpStatus.OK);
+			return new ResponseEntity<ApiResponse<Map<String, Object>>>(new ApiResponse<Map<String, Object>>(null, env.getProperty("login.fail.message"), env.getProperty("login.user.notAuthenticated")),HttpStatus.OK);
 		}
     }
     

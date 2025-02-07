@@ -5,27 +5,31 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.apptrove.ledgerlyBackend.entities.SecurityLog;
 import com.apptrove.ledgerlyBackend.entities.User;
 import com.apptrove.ledgerlyBackend.exception.UsernameNotFoundException;
+import com.apptrove.ledgerlyBackend.payload.UserDTO;
 import com.apptrove.ledgerlyBackend.repository.SecurityLogRepository;
 import com.apptrove.ledgerlyBackend.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
 	private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
-	@Autowired
-	private SecurityLogRepository securityLogRepository;
-
-	@Autowired
-	private UserRepository userRepository;
+	private final SecurityLogRepository securityLogRepository;
+	
+	private final UserRepository userRepository;
+	
+	private final ModelMapper modelMapper;
 
 	@Override
 	public boolean isUserLoggedIn(String username) {
@@ -57,14 +61,16 @@ public class UserServiceImpl implements UserService {
 
 	
 	@Override
-	public void loginUser(String username, String domainName, String sessionId, String ipAddress, String token) {
+	public UserDTO loginUser(String username, String domainName, String sessionId, String ipAddress, String token) {
 		SecurityLog securityLog = new SecurityLog();
 		User user = new User();
 		Date now = new Date();
+		UserDTO userdto = new UserDTO();
 		try {
 			user = userRepository.findByUsername(username)
 					.orElseThrow(() -> new UsernameNotFoundException("User with username: " + username
 							+ " not found:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"));
+			userdto = user != null ? modelMapper.map(user, UserDTO.class) : null;
 			securityLog.setUserId(user.getUserId());
 			securityLog.setUsername(username);
 			securityLog.setDomainName(domainName);
@@ -79,6 +85,7 @@ public class UserServiceImpl implements UserService {
 			e.printStackTrace();
 		}
 
+		return userdto;
 	}
 
 	@Transactional
