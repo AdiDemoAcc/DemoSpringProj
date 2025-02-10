@@ -93,6 +93,35 @@ public class TransactionController {
 		
 	}
 	
+	@GetMapping("/S8004")
+	public ResponseEntity<ApiResponse<Map<String, Object>>> getDataForNewTxn() {
+		Map<String, Object> respObject = new HashMap<String, Object>();
+		try {
+			respObject = this.txnRecordService.getTxnMstData();
+			ApiResponse<Map<String,Object>> apiResponse = new ApiResponse<Map<String,Object>>();
+			apiResponse.setRespObject(respObject);
+			apiResponse.setErrorMsg(environment.getProperty("common.server.request.success.message"));
+			apiResponse.setErrorCd(environment.getProperty("common.request.success.code"));
+			return new ResponseEntity<ApiResponse<Map<String,Object>>>(apiResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			return new ResponseEntity<ApiResponse<Map<String, Object>>>(new ApiResponse<Map<String, Object>>(null, environment.getProperty("common.server.request.failure.message"), environment.getProperty("common.request.failed.code")),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	@GetMapping("/S8005")
+	public ResponseEntity<ApiResponse<List<TransactionRecords>>> getAllAuthorizedTxnRecords() {
+		List<TransactionRecords> recList = new ArrayList<TransactionRecords>();
+		try {
+			recList = txnRecordService.getAllAuthorizedTxnRecords();
+			return new ResponseEntity<ApiResponse<List<TransactionRecords>>>(new ApiResponse<List<TransactionRecords>>(recList, environment.getProperty("common.server.request.success.message"), environment.getProperty("common.request.success.code")), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			return new ResponseEntity<ApiResponse<List<TransactionRecords>>>(new ApiResponse<List<TransactionRecords>>(null, environment.getProperty("common.server.request.failure.message"), environment.getProperty("common.request.failed.code")),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	
+	
 	
 
 }

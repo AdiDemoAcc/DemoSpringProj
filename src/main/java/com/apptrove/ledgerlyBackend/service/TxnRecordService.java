@@ -15,6 +15,8 @@ public interface TxnRecordService {
 	
 	public List<TransactionRecords> getUnauthorizedTxnList();
 	
-//	public Map<String, Object> 
+	public Map<String, Object> getTxnMstData();
+	
+	public List<TransactionRecords> getAllAuthorizedTxnRecords();
 	
 }

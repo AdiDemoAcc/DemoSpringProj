@@ -17,6 +17,9 @@ public class TransactionMakerModel {
 	
 	private Date endDate;
 	
+	private Integer glAccntId;
+	
+	
 	private String transactionType;
 	
 	private Long transactionAmnt;

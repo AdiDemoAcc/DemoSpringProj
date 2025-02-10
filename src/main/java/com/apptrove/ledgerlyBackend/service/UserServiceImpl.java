@@ -35,8 +35,7 @@ public class UserServiceImpl implements UserService {
 	public boolean isUserLoggedIn(String username) {
 		Date now = new Date();
 		try {
-			logger.info("Checking if user with username: " + username
-					+ " is already logged in::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			logger.info("Checking if user with username: " + username + " is already logged in");
 			int res = securityLogRepository.isUserLoggedIn(username, now);
 
 			return res > 0 ? true : false;
@@ -68,8 +67,7 @@ public class UserServiceImpl implements UserService {
 		UserDTO userdto = new UserDTO();
 		try {
 			user = userRepository.findByUsername(username)
-					.orElseThrow(() -> new UsernameNotFoundException("User with username: " + username
-							+ " not found:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"));
+					.orElseThrow(() -> new UsernameNotFoundException("User with username: " + username + " not found"));
 			userdto = user != null ? modelMapper.map(user, UserDTO.class) : null;
 			securityLog.setUserId(user.getUserId());
 			securityLog.setUsername(username);
@@ -93,8 +91,7 @@ public class UserServiceImpl implements UserService {
 	public void clearLastSession(String username) {
 		Date now = new Date();
 		try {
-			logger.info("Inside clearLastSession method for username: " + username
-					+ " ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+			logger.info("Inside clearLastSession method for username: " + username);
 			securityLogRepository.logoutUserMultipleRows(username, now, now);
 		} catch (Exception e) {
 			logger.error("An error occurred: " + e.getMessage());

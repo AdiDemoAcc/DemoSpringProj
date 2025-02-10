@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -34,6 +36,10 @@ public class TransactionRecords {
 	
 	@Column(name = "end_dt")
 	private Date endDate;
+	
+	@ManyToOne
+    @JoinColumn(name = "gl_accnt_id", nullable = false)
+    private GLAccntMst glAccount;
 	
 	@Column(name = "txn_type")
 	private String transactionType;
