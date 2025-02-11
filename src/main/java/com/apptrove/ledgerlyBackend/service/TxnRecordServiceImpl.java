@@ -1,5 +1,6 @@
 package com.apptrove.ledgerlyBackend.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,7 +48,10 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 			logger.info("Inside makerTransactionRecord");
 			transactionRecord = modelMapper.map(transactionMakerModel, TransactionRecords.class);
 			transactionRecord.setMakerDt(new Date());
-			transactionRecord.setGlAccount(glAccntMstRepository.findById(transactionMakerModel.getGlAccntId()).orElseThrow(() -> new ResourceNotFoundException("GL with Id: "+transactionMakerModel.getGlAccntId()+" not found")));
+			GLAccntMst glAccnt = glAccntMstRepository.findById(transactionMakerModel.getGlAccntId()).orElseThrow(() -> new ResourceNotFoundException("GL with Id: "+transactionMakerModel.getGlAccntId()+" not found"));
+			transactionRecord.setAuthStatus(0);
+			transactionRecord.setGlAccount(glAccnt);
+			transactionRecord.setGlAccntBal(glAccnt.getAccntBal());
 			transactionRecord = txnRecordsRepository.save(transactionRecord);
 			respObject.put("transactionRecords", transactionRecord);
 			respObject.put("flag",true);
@@ -70,11 +74,23 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 			transactionRecords = txnRecordsRepository.findById(transactionAuthorModel.getTransactionId())
 					.orElseThrow(() -> new ResourceNotFoundException("Transaction with Id: "+transactionAuthorModel.getTransactionId()+" not found"));
 			if (transactionRecords.getAuthStatus() == 0) {
+				GLAccntMst glAccnt = transactionRecords.getGlAccount();
+				BigDecimal bal =  new BigDecimal(0);
+				if ("Cr".equals(transactionRecords.getTransactionType())) {
+					bal = glAccnt.getAccntBal().add(transactionRecords.getTransactionAmnt());
+				} else if("Db".equals(transactionRecords.getTransactionType())) {
+					bal = glAccnt.getAccntBal().subtract(transactionRecords.getTransactionAmnt());
+				} else {
+					throw new RuntimeException("Illegal Transaction Type: "+transactionRecords.getTransactionType());
+				}
+				transactionRecords.setGlAccntBal(bal);
 				transactionRecords.setAuthorCd(transactionAuthorModel.getAuthorCd());
 				transactionRecords.setAuthorDt(new Date());
 				transactionRecords.setAuthStatus(transactionAuthorModel.getAuthStatus());
 				transactionRecords.setAuthorRmrks(transactionAuthorModel.getAuthorRmrks());
 				txnRecordsRepository.saveAndFlush(transactionRecords);
+				glAccnt.setAccntBal(bal);
+				glAccnt = glAccntMstRepository.saveAndFlush(glAccnt);
 				respObject.put("transactionRecords", transactionRecords);
 				respObject.put("message", "Record Updation Successful!");
 				respObject.put("flag", true);

@@ -1,5 +1,6 @@
 package com.apptrove.ledgerlyBackend.payload;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import lombok.Data;
@@ -22,7 +23,7 @@ public class TransactionMakerModel {
 	
 	private String transactionType;
 	
-	private Long transactionAmnt;
+	private BigDecimal transactionAmnt;
 	
 	private String transactionCategory;
 	

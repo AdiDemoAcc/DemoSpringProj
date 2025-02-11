@@ -1,5 +1,6 @@
 package com.apptrove.ledgerlyBackend.entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -45,7 +46,10 @@ public class TransactionRecords {
 	private String transactionType;
 	
 	@Column(name = "txn_amnt")
-	private Long transactionAmnt;
+	private BigDecimal transactionAmnt;
+	
+	@Column(name = "gl_accnt_bal")
+	private BigDecimal glAccntBal;
 	
 	@Column(name = "txn_category")
 	private String transactionCategory;
