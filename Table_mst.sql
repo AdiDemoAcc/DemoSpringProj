@@ -12,9 +12,10 @@ CREATE TABLE `com_ldgr_dbrd_menu_items_mst` (
 );
 
 CREATE TABLE `com_ldgr_gl_accnt_mst` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gl_accnt_id` int(11) NOT NULL AUTO_INCREMENT,
   `accnt_id` bigint(20) NOT NULL,
   `accnt_no` bigint(20) NOT NULL,
+  `accnt_bal` decimal(30,5) NOT NULL DEFAULT 0.00000,
   `bank_name` varchar(50) NOT NULL,
   `bank_branch` varchar(50) NOT NULL,
   `bank_city` varchar(30) NOT NULL,
@@ -25,8 +26,8 @@ CREATE TABLE `com_ldgr_gl_accnt_mst` (
   `author_cd` int(11) DEFAULT NULL,
   `author_dt` datetime DEFAULT NULL,
   `is_active` tinyint(4) NOT NULL,
-  PRIMARY KEY (`id`)
-);
+  PRIMARY KEY (`gl_accnt_id`)
+)
 
 CREATE TABLE `com_ldgr_dbrd_menu_mst` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -39,3 +40,16 @@ CREATE TABLE `com_ldgr_dbrd_menu_mst` (
   `is_active` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 );
+
+RENAME TABLE com_ldgr_dbrd_menu_mst TO com_ldgr_admin_dbrd_menu_mst;
+
+RENAME TABLE com_ldgr_dbrd_menu_items_mst TO com_ldgr_admin_dbrd_menu_items_mst;
+
+ALTER TABLE com_ldgr_txn_records MODIFY COLUMN txn_amnt DECIMAL(30,5) DEFAULT 0.00;
+
+ALTER TABLE com_ldgr_txn_records ADD COLUMN gl_accnt_bal DECIMAL(30,5) DEFAULT 0.00;
+
+ALTER TABLE com_ldgr_txn_records ADD COLUMN gl_accnt_id INT(11) NOT NULL AFTER end_dt;
+
+ALTER TABLE com_ldgr_txn_records ADD CONSTRAINT fk_gl_accnt FOREIGN KEY (gl_accnt_id) REFERENCES com_ldgr_gl_accnt_mst(gl_accnt_id);
+
