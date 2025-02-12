@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
+import com.apptrove.ledgerlyBackend.payload.GLAccntTxn;
 import com.apptrove.ledgerlyBackend.payload.TransactionAuthorModel;
 import com.apptrove.ledgerlyBackend.payload.TransactionMakerModel;
 
@@ -19,4 +20,5 @@ public interface TxnRecordService {
 	
 	public List<TransactionRecords> getAllAuthorizedTxnRecords();
 	
+	public List<GLAccntTxn> getTransactionsAccordingToGL(Integer glAccntId);
 }

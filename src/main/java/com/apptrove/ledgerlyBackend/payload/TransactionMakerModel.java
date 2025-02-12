@@ -20,6 +20,7 @@ public class TransactionMakerModel {
 	
 	private Integer glAccntId;
 	
+	private Integer authStatus;
 	
 	private String transactionType;
 	

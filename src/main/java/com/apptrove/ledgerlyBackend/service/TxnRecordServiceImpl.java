@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.apptrove.ledgerlyBackend.entities.GLAccntMst;
 import com.apptrove.ledgerlyBackend.entities.TransactionMst;
 import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
+import com.apptrove.ledgerlyBackend.payload.GLAccntTxn;
 import com.apptrove.ledgerlyBackend.payload.TransactionAuthorModel;
 import com.apptrove.ledgerlyBackend.payload.TransactionMakerModel;
 import com.apptrove.ledgerlyBackend.repository.GLAccntMstRepository;
@@ -49,7 +51,9 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 			transactionRecord = modelMapper.map(transactionMakerModel, TransactionRecords.class);
 			transactionRecord.setMakerDt(new Date());
 			GLAccntMst glAccnt = glAccntMstRepository.findById(transactionMakerModel.getGlAccntId()).orElseThrow(() -> new ResourceNotFoundException("GL with Id: "+transactionMakerModel.getGlAccntId()+" not found"));
-			transactionRecord.setAuthStatus(0);
+			if (transactionRecord.getAuthStatus() == null) {
+				transactionRecord.setAuthStatus(0);
+			}
 			transactionRecord.setGlAccount(glAccnt);
 			transactionRecord.setGlAccntBal(glAccnt.getAccntBal());
 			transactionRecord = txnRecordsRepository.save(transactionRecord);
@@ -163,6 +167,29 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 			e.printStackTrace();
 		}
 		return txnRecList;
+	}
+
+	@Override
+	public List<GLAccntTxn> getTransactionsAccordingToGL(Integer glAccntId) {
+		List<GLAccntTxn> glAccntTxnList = new ArrayList<GLAccntTxn>();
+		List<TransactionRecords> txnRecList = new ArrayList<TransactionRecords>();
+		try {
+			logger.info("Inside getTransactionsAccordingToGL method for GL with id: "+glAccntId);
+			GLAccntMst glAccntMst = glAccntMstRepository.findByGlAccntIdAndIsActive(glAccntId, true)
+					.orElseThrow(() -> new ResourceNotFoundException("GL Account with Id: " + glAccntId + " not found"));
+			
+			txnRecList = txnRecordsRepository.findByGlAccountAndAuthStatus(glAccntMst,1);
+			logger.info("Found {} number of transactions for GL Account",txnRecList.size());
+			glAccntTxnList = txnRecList.stream()
+					.map(txnRecord -> this.modelMapper.map(txnRecord, GLAccntTxn.class))
+					.peek(glAccntTxn -> glAccntTxn.setGlAccntId(glAccntId))
+					.collect(Collectors.toList());
+			logger.info("Exiting getTransactionsAccordingToGL method for GL with id: "+glAccntId);
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			e.printStackTrace();
+		}
+		return glAccntTxnList;
 	}
 	
 	

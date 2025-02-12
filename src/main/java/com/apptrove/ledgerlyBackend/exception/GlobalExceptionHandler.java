@@ -1,7 +1,5 @@
 package com.apptrove.ledgerlyBackend.exception;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -13,8 +11,6 @@ import com.apptrove.ledgerlyBackend.payload.ApiResponse;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-	private static final Logger logger = LogManager.getLogger(GlobalExceptionHandler.class);
 	
 	@Autowired
 	private Environment env;

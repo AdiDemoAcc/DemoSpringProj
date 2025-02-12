@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
 import com.apptrove.ledgerlyBackend.payload.ApiResponse;
+import com.apptrove.ledgerlyBackend.payload.GLAccntTxn;
 import com.apptrove.ledgerlyBackend.payload.TransactionAuthorModel;
 import com.apptrove.ledgerlyBackend.payload.TransactionMakerModel;
 import com.apptrove.ledgerlyBackend.service.TxnRecordService;
@@ -121,7 +123,18 @@ public class TransactionController {
 		}
 	}
 	
-	
+	@GetMapping("/S8006/{id}")
+	public ResponseEntity<ApiResponse<List<GLAccntTxn>>> getTransactionsAccordingGLAccounts(@PathVariable("id") Integer glAccountNumber) {
+		List<GLAccntTxn> txnList = new ArrayList<GLAccntTxn>();
+		try {
+			txnList = txnRecordService.getTransactionsAccordingToGL(glAccountNumber);
+			return new ResponseEntity<ApiResponse<List<GLAccntTxn>>>(new ApiResponse<List<GLAccntTxn>>(txnList, environment.getProperty("common.server.request.success.message"), environment.getProperty("common.request.success.code")), HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			return new ResponseEntity<ApiResponse<List<GLAccntTxn>>>(new ApiResponse<List<GLAccntTxn>>(null, environment.getProperty("common.server.request.failure.message"), environment.getProperty("common.request.failed.code")),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
 	
 
 }
