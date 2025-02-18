@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.apptrove.ledgerlyBackend.entities.MenuItemMst;
+import com.apptrove.ledgerlyBackend.entities.MenuMst;
 import com.apptrove.ledgerlyBackend.entities.RoleMenuMst;
 import com.apptrove.ledgerlyBackend.repository.MenuItemMstRepository;
 import com.apptrove.ledgerlyBackend.repository.MenuMstRepository;
@@ -35,6 +37,8 @@ public class MenuServiceImpl implements MenuService {
 		Map<String, Object> respObject = new HashMap<String, Object>();
 		List<Integer> menuIdList = new ArrayList<Integer>();
 		List<Integer> menuSubIdList = new ArrayList<Integer>();
+		List<MenuMst> menuMstList = new ArrayList<MenuMst>();
+		List<MenuItemMst> menuItemMstList = new ArrayList<MenuItemMst>();
 		try {
 			logger.info("Inside getMenuMap for roleId: {}",roleId);
 			RoleMenuMst roleMenuMst = roleMenuMstRepository.findByRoleIdAndIsActive(roleId, true).orElseThrow(() -> new ResourceNotFoundException("Role Id: "+roleId+" not found."));
@@ -57,8 +61,13 @@ public class MenuServiceImpl implements MenuService {
 			}
 			logger.info("Menu ID List: "+menuIdList);
 			logger.info("Menu Sub-ID List: " + menuSubIdList);
-			respObject.put("menuIdList", menuIdList);
-			respObject.put("menuSubIdList", menuSubIdList);
+			
+			menuMstList = menuMstRepository.findByMenuIdIn(menuIdList);
+			menuItemMstList = menuItemMstRepository.findByMenuSubIdIn(menuSubIdList);
+			
+			
+			respObject.put("menuMstList", menuMstList);
+			respObject.put("menuItemMstList", menuItemMstList);
 			logger.info("Exiting getMenuMap method");
 		} catch (Exception e) {
 			logger.info("An error occurred: "+e.getMessage());
