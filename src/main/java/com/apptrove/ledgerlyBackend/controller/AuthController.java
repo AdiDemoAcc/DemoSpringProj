@@ -22,6 +22,7 @@ import com.apptrove.ledgerlyBackend.payload.ApiResponse;
 import com.apptrove.ledgerlyBackend.payload.LoginModel;
 import com.apptrove.ledgerlyBackend.payload.UserDTO;
 import com.apptrove.ledgerlyBackend.security.util.JwtUtil;
+import com.apptrove.ledgerlyBackend.service.MenuService;
 import com.apptrove.ledgerlyBackend.service.UserService;
 
 import jakarta.servlet.http.Cookie;
@@ -46,6 +47,9 @@ public class AuthController {
     
     @Autowired
     private Environment env;
+    
+    @Autowired
+    private MenuService menuService;
 	
     @PostMapping(path = "/S1001")
     public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) {
@@ -113,6 +117,22 @@ public class AuthController {
 			return new ResponseEntity<ApiResponse<String>>(new ApiResponse<String>(e.getMessage(), env.getProperty("logout.fail.message"), env.getProperty("logout.user.fail.code")),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
         
+    }
+    
+    @PostMapping("/S1003")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getRoleBasedMenu(@RequestBody Integer roleId) {
+    	Map<String, Object> respObject = new HashMap<String, Object>();
+    	ApiResponse<Map<String, Object>> apiResponse = new ApiResponse<Map<String,Object>>();
+    	try {
+			respObject = menuService.getMenuMap(roleId);
+			apiResponse.setRespObject(respObject);
+			apiResponse.setErrorMsg(env.getProperty("common.server.request.success.message"));
+			apiResponse.setErrorCd(env.getProperty("common.request.failed.code"));
+			return new ResponseEntity<ApiResponse<Map<String,Object>>>(apiResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			return new ResponseEntity<ApiResponse<Map<String, Object>>>(new ApiResponse<Map<String, Object>>(null, env.getProperty("common.server.request.failure.message"), env.getProperty("common.request.failed.code")),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
     }
     
     
