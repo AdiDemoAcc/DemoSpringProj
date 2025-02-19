@@ -127,7 +127,7 @@ public class AuthController {
 			respObject = menuService.getMenuMap(roleId);
 			apiResponse.setRespObject(respObject);
 			apiResponse.setErrorMsg(env.getProperty("common.server.request.success.message"));
-			apiResponse.setErrorCd(env.getProperty("common.request.failed.code"));
+			apiResponse.setErrorCd(env.getProperty("common.request.success.code"));
 			return new ResponseEntity<ApiResponse<Map<String,Object>>>(apiResponse,HttpStatus.OK);
 		} catch (Exception e) {
 			logger.error("An error occurred: "+e.getMessage());

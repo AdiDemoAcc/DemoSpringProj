@@ -59,12 +59,8 @@ public class MenuServiceImpl implements MenuService {
 						.forEach(menuSubIdList::add);
 				}
 			}
-			logger.info("Menu ID List: "+menuIdList);
-			logger.info("Menu Sub-ID List: " + menuSubIdList);
-			
 			menuMstList = menuMstRepository.findByMenuIdIn(menuIdList);
 			menuItemMstList = menuItemMstRepository.findByMenuSubIdIn(menuSubIdList);
-			
 			
 			respObject.put("menuMstList", menuMstList);
 			respObject.put("menuItemMstList", menuItemMstList);

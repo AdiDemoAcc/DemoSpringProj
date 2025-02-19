@@ -20,5 +20,9 @@ public class UserDTO {
 	private String contactNum;
 	
 	private Date createdOn;
+	
+	private Integer roleId;
+	
+	private String roleName;
 
 }

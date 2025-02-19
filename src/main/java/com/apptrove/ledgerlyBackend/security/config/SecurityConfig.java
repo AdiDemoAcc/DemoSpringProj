@@ -16,8 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsConfigurationSource;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.apptrove.ledgerlyBackend.security.filter.JwtAuthenticationFilter;
 
@@ -31,7 +31,7 @@ public class SecurityConfig {
 	@Autowired
 	private UserDetailsService userDetailsService;
 	
-	private final String[] allowedOrigins = {"http://localhost:8181,http://localhost:5173/"};
+	private final String[] allowedOrigins = {"http://localhost:8181","http://localhost:5173/","http://192.168.0.58:5173","http://192.168.0.54:5173"};
 	private final String[] allowedHeaders = {"Authorization","Content-Type"};
 	private final String[] allowedMethods = {"GET","POST"};
 	
@@ -54,6 +54,8 @@ public class SecurityConfig {
 	@Bean
 	 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf().disable()
+			.cors().configurationSource(corsConfigurationSource())
+			.and()
 			.authorizeHttpRequests()
 			.requestMatchers("/ldgr/T1000/S1001").permitAll()
 			.anyRequest().authenticated()
@@ -66,7 +68,7 @@ public class SecurityConfig {
 	}
 	
 	@Bean
-	CorsConfigurationSource corsConfigurationSource() {
+	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
 		
 		configuration.setAllowedOrigins(List.of(allowedOrigins));

@@ -69,6 +69,20 @@ public class UserServiceImpl implements UserService {
 			user = userRepository.findByUsername(username)
 					.orElseThrow(() -> new UsernameNotFoundException("User with username: " + username + " not found"));
 			userdto = user != null ? modelMapper.map(user, UserDTO.class) : null;
+			userdto.setRoleId(
+					user.getRoles()
+					.stream()
+					.map(role -> role.getRoleId())
+					.findFirst()
+					.orElse(1006)
+			);
+			userdto.setRoleName(
+					user.getRoles()
+					.stream()
+					.map(role -> role.getRoleName().toString())
+					.findFirst()
+					.orElse("ROLE_USER")
+			);
 			securityLog.setUserId(user.getUserId());
 			securityLog.setUsername(username);
 			securityLog.setDomainName(domainName);
