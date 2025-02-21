@@ -1,5 +1,6 @@
 package com.apptrove.ledgerlyBackend.controller;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,7 +8,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,6 +31,7 @@ import com.apptrove.ledgerlyBackend.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @RequestMapping("/ldgr/T1000")
 @RestController
@@ -52,7 +56,7 @@ public class AuthController {
     private MenuService menuService;
 	
     @PostMapping(path = "/S1001")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest,HttpServletResponse httpServletResponse) {
+    public ResponseEntity<ApiResponse<Map<String, Object>>> login(@RequestBody LoginModel loginModel,HttpServletRequest httpServletRequest,HttpSession session,HttpServletResponse httpServletResponse) {
     	Map<String, Object> respObject = new HashMap<String, Object>();
     	try {
     		Authentication authentication = authenticationManager.authenticate(
@@ -64,16 +68,24 @@ public class AuthController {
 			}
     		
         	if (!userLoggedIn || loginModel.isClearSession()) {
-        		httpServletRequest.getSession().invalidate();
-        		httpServletRequest.getSession(true);
+        		logger.info("Old Session Id: {}",session.getId());
+        		session.invalidate();
+        		session = httpServletRequest.getSession(true);
         		String domainName = httpServletRequest.getServerName();
         		String ipAddress = httpServletRequest.getRemoteAddr();
         		String sessionId = httpServletRequest.getSession().getId();
         		String token = jwtUtil.generateToken(authentication,httpServletRequest,httpServletResponse);
         		UserDTO user = userService.loginUser(loginModel.getUsername(), domainName, sessionId, ipAddress,token);
         		httpServletRequest.getSession().setAttribute("token", token);
+        		httpServletRequest.setAttribute("sessionId", sessionId);
         		respObject.put("user", user);
         		respObject.put("token", token);
+        		respObject.put("sessionId", sessionId);
+        		logger.info("Attempting login for user: {}", loginModel.getUsername());
+				logger.info("Token: {}", token);
+				logger.info("Domain: {}", domainName);
+				logger.info("IP Address: {}", ipAddress);
+				logger.info("Session ID: {}", sessionId);
         		
             	return new ResponseEntity<ApiResponse<Map<String, Object>>>(new ApiResponse<Map<String, Object>>(respObject, env.getProperty("login.success.message"), env.getProperty("login.user.authenticated")),HttpStatus.OK);
 			} else {
@@ -91,18 +103,19 @@ public class AuthController {
     	String sessionId = "";
         try {
 			String token = httpServletRequest.getHeader("Authorization").substring(7);
-			if (token != null && token != "" && reqObj.containsKey("username")) {
+			if (token != null && token != "" && reqObj.containsKey("username") && reqObj.containsKey("sessionId")) {
 				
-				for (Cookie cookie : httpServletRequest.getCookies()) {
-					if (cookie.getName().equals("sessionId")) {
-						sessionId = cookie.getValue();
-					}
-				}
-				
-//				 httpServletRequest.getSession().getId();
+				sessionId = reqObj.get("sessionId").toString();
+				String tken = (String) httpServletRequest.getSession().getAttribute("token");
 				String domainName = httpServletRequest.getServerName();
 				String ipAddress = httpServletRequest.getRemoteAddr();
 				String username = reqObj.get("username").toString();
+				
+				logger.info("Attempting logout for user: {}", username);
+				logger.info("Token: {}", token);
+				logger.info("Domain: {}", domainName);
+				logger.info("IP Address: {}", ipAddress);
+				logger.info("Session ID: {}", sessionId);
 				
 				boolean flag = this.userService.logoutUser(username, token, domainName, ipAddress, sessionId);
 				if (flag) {

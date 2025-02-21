@@ -1,5 +1,6 @@
 package com.apptrove.ledgerlyBackend.entities;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import jakarta.persistence.Column;
@@ -23,7 +24,9 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "com_ldgr_role_mst")
-public class Role {
+public class Role implements Serializable{
+
+	private static final long serialVersionUID = 284252490579624007L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

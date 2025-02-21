@@ -48,16 +48,7 @@ public class JwtUtil {
 					.collect(Collectors.toList())
 					);
 			token = createToken(claims,user.getUsername());
-			String sessionId = httpServletRequest.getSession().getId();
-			ResponseCookie sessionCookie = ResponseCookie.from("sessionId",sessionId)
-					.httpOnly(true)
-					.secure(true)
-					.path("/")
-					.sameSite("Strict")
-					.maxAge(Duration.ofDays(1))
-					.build();
 			
-			httpServletResponse.setHeader(HttpHeaders.SET_COOKIE, sessionCookie.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

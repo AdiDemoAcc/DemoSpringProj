@@ -24,60 +24,55 @@ import com.apptrove.ledgerlyBackend.security.filter.JwtAuthenticationFilter;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 	@Autowired
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
-	
+
 	@Autowired
 	private UserDetailsService userDetailsService;
-	
-	private final String[] allowedOrigins = {"http://localhost:8181","http://localhost:5173/","http://192.168.0.58:5173","http://192.168.0.54:5173"};
-	private final String[] allowedHeaders = {"Authorization","Content-Type"};
-	private final String[] allowedMethods = {"GET","POST"};
-	
+
+	private final String[] allowedOrigins = { "http://localhost:8181", "http://localhost:5173/",
+			"http://192.168.0.58:5173", "http://192.168.0.54:5173" };
+	private final String[] allowedHeaders = { "Authorization", "Content-Type", "Cookie", "Set-Cookie" };
+	private final String[] allowedMethods = { "GET", "POST", "PUT", "DELETE", "OPTIONS" };
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@SuppressWarnings("removal")
 	@Bean
 	public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-		return http.getSharedObject(AuthenticationManagerBuilder.class)
-				.userDetailsService(userDetailsService)
-				.passwordEncoder(passwordEncoder())
-				.and()
-				.build();
+		return http.getSharedObject(AuthenticationManagerBuilder.class).userDetailsService(userDetailsService)
+				.passwordEncoder(passwordEncoder()).and().build();
 	}
-	
+
 	@SuppressWarnings({ "deprecation", "removal" })
 	@Bean
-	 public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-			.cors().configurationSource(corsConfigurationSource())
-			.and()
-			.authorizeHttpRequests()
-			.requestMatchers("/ldgr/T1000/S1001").permitAll()
-			.anyRequest().authenticated()
-			.and()
-			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		
-		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-		
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource()))
+				.authorizeHttpRequests(
+						auth -> auth.requestMatchers("/ldgr/T1000/S1001").permitAll().anyRequest().authenticated())
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 	}
-	
+
 	@Bean
 	public CorsConfigurationSource corsConfigurationSource() {
 		CorsConfiguration configuration = new CorsConfiguration();
-		
-		configuration.setAllowedOrigins(List.of(allowedOrigins));
+
+		configuration.setAllowedOriginPatterns(List.of(allowedOrigins)); 
 		configuration.setAllowedHeaders(List.of(allowedHeaders));
 		configuration.setAllowedMethods(List.of(allowedMethods));
 		configuration.setAllowCredentials(true);
+//		configuration.addExposedHeader("Set-Cookie");
+		
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
-		
+
 		return source;
 	}
 }
