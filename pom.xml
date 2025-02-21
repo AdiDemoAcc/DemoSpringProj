@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.apptrove</groupId>
 	<artifactId>ledgerlyBackend</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-DEV</version>
 	<name>ledgerlyBackend</name>
 	<description>Backend For Ledgerly</description>
 	<url />
