@@ -1,0 +1,9 @@
+  _      _                _       
+ | |    (_)              (_)      
+ | |     _  ___  ___ _ __ _  __ _ 
+ | |    | |/ _ \/ __| '__| |/ _` |
+ | |____| |  __/ (__| |  | | (_| |
+ |______|_|\___|\___|_|  |_|\__,_|
+
+  Ledgerly Backend v${application.version}
+  Running on Spring Boot v${spring-boot.version}
