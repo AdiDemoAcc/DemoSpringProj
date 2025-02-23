@@ -1,6 +1,5 @@
 package com.apptrove.ledgerlyBackend.controller;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,9 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +25,6 @@ import com.apptrove.ledgerlyBackend.security.util.JwtUtil;
 import com.apptrove.ledgerlyBackend.service.MenuService;
 import com.apptrove.ledgerlyBackend.service.UserService;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

@@ -25,6 +25,7 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<ApiResponse<String>>(apiResponse, HttpStatus.NOT_FOUND);
 	}
 	
+	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ApiResponse<String>> exceptionHandler(Exception ex) {
 		ApiResponse<String> apiResponse = new ApiResponse<String>();
 		apiResponse.setRespObject(env.getProperty("server.internal.error.message"));
@@ -32,6 +33,15 @@ public class GlobalExceptionHandler {
 		apiResponse.setErrorCd(env.getProperty("internal.server.error.code"));
 		
 		return new ResponseEntity<ApiResponse<String>>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ApiResponse<String>> resourceNotFoundExceptionHandler(ResourceNotFoundException ex) {
+		ApiResponse<String> apiResponse = new ApiResponse<String>();
+		apiResponse.setRespObject(ex.getMessage());
+		apiResponse.setErrorMsg(ex.getMessage());
+		apiResponse.setErrorCd(env.getProperty("common.request.failed.code"));
+		return new ResponseEntity<ApiResponse<String>>(apiResponse,HttpStatus.NO_CONTENT);
 	}
 	
 }
