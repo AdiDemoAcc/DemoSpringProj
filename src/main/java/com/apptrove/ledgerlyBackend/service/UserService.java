@@ -8,7 +8,7 @@ public interface UserService {
 	
 	public void logoutUserSession(String username);
 	
-	public boolean checkUserSession(String username,String domainName,String sessionId,String ipAddress);
+	public boolean checkUserSession(String username,String sessionId,String ipAddress,String token);
 	
 	public UserDTO loginUser(String username,String domainName,String sessionId,String ipAddress,String token);
 

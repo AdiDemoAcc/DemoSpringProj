@@ -52,12 +52,6 @@ public class UserServiceImpl implements UserService {
 
 	}
 
-	@Override
-	public boolean checkUserSession(String username, String domainName, String sessionId, String ipAddress) {
-		return false;
-
-	}
-
 	
 	@Override
 	public UserDTO loginUser(String username, String domainName, String sessionId, String ipAddress, String token) {
@@ -131,6 +125,18 @@ public class UserServiceImpl implements UserService {
 		}
 		return false;
 	}
-	
+
+	@Override
+	public boolean checkUserSession(String username, String sessionId, String ipAddress, String token) {
+		boolean flag = true;
+		try {
+			flag = securityLogRepository.validateSession(username, token, ipAddress, new Date(), sessionId, true);
+		} catch (Exception e) {
+			logger.error("An error occurred: {}",e.getMessage());
+			e.printStackTrace();
+		}
+		return flag;
+	}
+
 	
 }

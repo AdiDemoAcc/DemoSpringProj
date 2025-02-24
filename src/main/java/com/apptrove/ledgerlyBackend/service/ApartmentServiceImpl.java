@@ -1,6 +1,7 @@
 package com.apptrove.ledgerlyBackend.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +76,7 @@ public class ApartmentServiceImpl implements ApartmentService {
 					.orElseThrow(() -> new ResourceNotFoundException("Apartment id: "+apartmentOccupantModel.getAptmntId()+" not found"));
 			
 			ApartmentOccupant apartmentOccupant = modelMapper.map(apartmentOccupantModel, ApartmentOccupant.class);
+			apartmentOccupant.setMakerDt(new Date());
 			apartmentOccupant.setAptmntMst(apartmentMst);
 			
 			apartmentOccupant = apartmentOccupantRepository.save(apartmentOccupant);

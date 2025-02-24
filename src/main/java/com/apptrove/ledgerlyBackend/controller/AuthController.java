@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.apptrove.ledgerlyBackend.payload.ApiResponse;
 import com.apptrove.ledgerlyBackend.payload.LoginModel;
 import com.apptrove.ledgerlyBackend.payload.UserDTO;
+import com.apptrove.ledgerlyBackend.payload.UserSessionCheck;
 import com.apptrove.ledgerlyBackend.security.util.JwtUtil;
 import com.apptrove.ledgerlyBackend.service.MenuService;
 import com.apptrove.ledgerlyBackend.service.UserService;
@@ -102,7 +103,7 @@ public class AuthController {
 			if (token != null && token != "" && reqObj.containsKey("username") && reqObj.containsKey("sessionId")) {
 				
 				sessionId = reqObj.get("sessionId").toString();
-				String tken = (String) httpServletRequest.getSession().getAttribute("token");
+				
 				String domainName = httpServletRequest.getServerName();
 				String ipAddress = httpServletRequest.getRemoteAddr();
 				String username = reqObj.get("username").toString();
@@ -141,6 +142,20 @@ public class AuthController {
 		} catch (Exception e) {
 			logger.error("An error occurred: "+e.getMessage());
 			return new ResponseEntity<ApiResponse<Map<String, Object>>>(new ApiResponse<Map<String, Object>>(null, env.getProperty("common.server.request.failure.message"), env.getProperty("common.request.failed.code")),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+    }
+    
+    @PostMapping("/S1004")
+    public ResponseEntity<ApiResponse<Boolean>> validateUserSession(@RequestBody UserSessionCheck reqObj, HttpServletRequest request) {
+        try {
+        	String token = request.getHeader("Authorization").substring(7);
+        	String ipAddress = request.getRemoteAddr();
+			Boolean flag = userService.checkUserSession(reqObj.getUsername(), reqObj.getSessionId(), ipAddress, token);
+			ApiResponse<Boolean> apiResponse = new ApiResponse<Boolean>(flag, env.getProperty("common.server.request.success.message"), env.getProperty("common.request.success.code"));
+			return new ResponseEntity<ApiResponse<Boolean>>(apiResponse, HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("An error occurred: "+e.getMessage());
+			return new ResponseEntity<ApiResponse<Boolean>>(new ApiResponse<Boolean>(false, env.getProperty("common.server.request.failure.message"), env.getProperty("common.request.failed.code")),HttpStatus.INTERNAL_SERVER_ERROR);
 		}
     }
     
