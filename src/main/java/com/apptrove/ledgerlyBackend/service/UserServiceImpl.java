@@ -130,6 +130,7 @@ public class UserServiceImpl implements UserService {
 	public boolean checkUserSession(String username, String sessionId, String ipAddress, String token) {
 		boolean flag = true;
 		try {
+			logger.info("Inside checkUserSession for user: {}",username);
 			flag = securityLogRepository.validateSession(username, token, ipAddress, new Date(), sessionId, true);
 		} catch (Exception e) {
 			logger.error("An error occurred: {}",e.getMessage());

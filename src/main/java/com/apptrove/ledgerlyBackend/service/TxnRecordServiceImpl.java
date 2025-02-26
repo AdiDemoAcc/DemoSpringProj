@@ -130,29 +130,66 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 
 	@Override
 	public Map<String, Object> getTxnMstData() {
-		Map<String,Object> respObject = new HashMap<String, Object>();
-		TransactionMst txnCategoryTypeData = new TransactionMst();
-		TransactionMst txnTypeData = new TransactionMst();
-		TransactionMst txnAmntData = new TransactionMst();
-		try {
-			logger.info("Inside getTxnMstData method");
-			txnCategoryTypeData = txnMstRepository.findByParamNameAndIsActive("txn_category", true);
-			txnTypeData = txnMstRepository.findByParamNameAndIsActive("txn_category_type",true);
-			txnAmntData = txnMstRepository.findByParamNameAndIsActive("txn_amnt", true);
-			logger.info("Transaction Category Data: "+txnCategoryTypeData);
-			logger.info("Transaction Type Data: "+txnTypeData);
-			logger.info("Transaction Amount Data: "+txnAmntData);
-			
-			respObject.put("txnCategoryTypeData", txnCategoryTypeData);
-			respObject.put("txnTypeData", txnTypeData);
-			respObject.put("txnAmntData", txnAmntData);
-			
-			logger.info("Exiting getTxnMstData method");
-		} catch (Exception e) {
-			logger.info("An error occurred: "+e.getMessage());
-			e.printStackTrace();
-		}
-		return respObject;
+	    Map<String, Object> respObject = new HashMap<>();
+	    
+	    try {
+	        logger.info("Inside getTxnMstData method");
+	        
+	        // Fetch transaction master data
+	        TransactionMst txnCategoryTypeData = txnMstRepository.findByParamNameAndIsActive("txn_category", true);
+	        TransactionMst txnTypeData = txnMstRepository.findByParamNameAndIsActive("txn_category_type", true);
+	        TransactionMst txnAmntData = txnMstRepository.findByParamNameAndIsActive("txn_amnt", true);
+
+	        logger.info("Transaction Category Data: " + txnCategoryTypeData);
+	        logger.info("Transaction Type Data: " + txnTypeData);
+	        logger.info("Transaction Amount Data: " + txnAmntData);
+
+	        List<Map<String, Object>> categoryList = new ArrayList<>();
+	        List<Map<String, Object>> typeList = new ArrayList<>();
+	        List<Map<String, Object>> amountList = new ArrayList<>();
+
+	        if (txnCategoryTypeData != null && txnCategoryTypeData.getParamValue() != null) {
+	            String[] catArray = txnCategoryTypeData.getParamValue().split("\\|");
+	            for (int i = 0; i < catArray.length; i++) {
+	                Map<String, Object> item = new HashMap<>();
+	                item.put("id", i + 1);
+	                item.put("name", catArray[i]);
+	                categoryList.add(item);
+	            }
+	        }
+
+	        if (txnTypeData != null && txnTypeData.getParamValue() != null) {
+	            String[] typeArray = txnTypeData.getParamValue().split("\\|");
+	            for (int i = 0; i < typeArray.length; i++) {
+	                Map<String, Object> item = new HashMap<>();
+	                item.put("id", i + 1);
+	                item.put("name", typeArray[i]);
+	                typeList.add(item);
+	            }
+	        }
+
+	        if (txnAmntData != null && txnAmntData.getParamValue() != null) {
+	            String[] amntArray = txnAmntData.getParamValue().split("\\|");
+	            for (int i = 0; i < amntArray.length; i++) {
+	                Map<String, Object> item = new HashMap<>();
+	                item.put("id", i + 1);
+	                item.put("name", amntArray[i]);
+	                amountList.add(item);
+	            }
+	        }
+
+	        // Add processed maps to response object
+	        respObject.put("txnCategoryTypeData", categoryList);
+	        respObject.put("txnTypeData", typeList);
+	        respObject.put("txnAmntData", amountList);
+
+	        logger.info("Exiting getTxnMstData method");
+
+	    } catch (Exception e) {
+	        logger.error("An error occurred: " + e.getMessage(), e);
+	    }
+
+	    return respObject;
 	}
 
 	@Override
