@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.apptrove.ledgerlyBackend.entities.GLAccntMst;
 import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
 import com.apptrove.ledgerlyBackend.payload.ApiResponse;
 import com.apptrove.ledgerlyBackend.payload.GLAccntTxn;
@@ -135,6 +136,21 @@ public class TransactionController {
 		}
 		
 	}
+	
+	@GetMapping("/S8007")
+	public ResponseEntity<ApiResponse<List<GLAccntMst>>> getAllGlAccnts() {
+		try {
+			List<GLAccntMst> glAccntList = txnRecordService.getAllGlAccnts();
+			ApiResponse<List<GLAccntMst>> apiResponse = new ApiResponse<List<GLAccntMst>>(glAccntList, environment.getProperty("common.server.request.success.message"), environment.getProperty("common.request.success.code"));
+			return new ResponseEntity<ApiResponse<List<GLAccntMst>>>(apiResponse,HttpStatus.OK);
+		} catch (Exception e) {
+			logger.error("An error occurred: {}",e.getMessage());
+			e.printStackTrace();
+			return new ResponseEntity<ApiResponse<List<GLAccntMst>>>(new ApiResponse<List<GLAccntMst>>(null, environment.getProperty("common.server.request.failure.message"), environment.getProperty("common.request.failed.code")),HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		
+	}
+	
 	
 
 }

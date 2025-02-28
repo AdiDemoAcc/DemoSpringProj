@@ -61,6 +61,6 @@ public class GLAccntMst {
 	private Date authorDt;
 	
 	@Column(name = "is_active")
-	private Boolean isActive;
+	private Integer isActive;
 	
 }

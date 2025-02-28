@@ -212,7 +212,7 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 		List<TransactionRecords> txnRecList = new ArrayList<TransactionRecords>();
 		try {
 			logger.info("Inside getTransactionsAccordingToGL method for GL with id: "+glAccntId);
-			GLAccntMst glAccntMst = glAccntMstRepository.findByGlAccntIdAndIsActive(glAccntId, true)
+			GLAccntMst glAccntMst = glAccntMstRepository.findByGlAccntIdAndIsActive(glAccntId, 1)
 					.orElseThrow(() -> new ResourceNotFoundException("GL Account with Id: " + glAccntId + " not found"));
 			
 			txnRecList = txnRecordsRepository.findByGlAccountAndAuthStatus(glAccntMst,1);
@@ -227,6 +227,21 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 			e.printStackTrace();
 		}
 		return glAccntTxnList;
+	}
+
+	@Override
+	public List<GLAccntMst> getAllGlAccnts() {
+		List<GLAccntMst> glAccntList = new ArrayList<GLAccntMst>();
+		try {
+			logger.info("Inside getAllGlAccnts method");
+			glAccntList = glAccntMstRepository.findByIsActive(1);
+			logger.info("Found {} Gl Account(s)",glAccntList.size());
+			logger.info("Exiting getAllGlAccnts method");
+		} catch (Exception e) {
+			logger.error("An error occurred: {}",e.getMessage());
+			e.printStackTrace();
+		}
+		return glAccntList;
 	}
 	
 	
