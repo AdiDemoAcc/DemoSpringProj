@@ -46,13 +46,13 @@ public class ApartmentServiceImpl implements ApartmentService {
 			logger.info("Inside getAllResidentDetails method");
 			
 			bldngList = buildingMstRepository.findByIsActive(1);
-			logger.info("Found Building List {}",bldngList);
+			logger.info("Found No of {} Buildings",bldngList.size());
 			
 			aptmntMstList = apartmentMstRepository.findByIsActive(1);
-			logger.info("Found Apartment List {}",aptmntMstList);
+			logger.info("Found No of {} Apartments",aptmntMstList.size());
 			
 			aptmntOccpntList = apartmentOccupantRepository.findByIsActive(1);
-			logger.info("Found Apartment Occupant List {}",aptmntOccpntList);
+			logger.info("Found No of {} Apartment Occupants",aptmntOccpntList.size());
 			
 			respObject.put("bldngList", bldngList);
 			respObject.put("aptmntMstList", aptmntMstList);

@@ -21,6 +21,7 @@ import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
 import com.apptrove.ledgerlyBackend.payload.GLAccntTxn;
 import com.apptrove.ledgerlyBackend.payload.TransactionAuthorModel;
 import com.apptrove.ledgerlyBackend.payload.TransactionMakerModel;
+import com.apptrove.ledgerlyBackend.payload.TransactionMstType;
 import com.apptrove.ledgerlyBackend.repository.GLAccntMstRepository;
 import com.apptrove.ledgerlyBackend.repository.TxnMstRepository;
 import com.apptrove.ledgerlyBackend.repository.TxnRecordsRepository;
@@ -144,38 +145,44 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 	        logger.info("Transaction Type Data: " + txnTypeData);
 	        logger.info("Transaction Amount Data: " + txnAmntData);
 
-	        List<Map<String, Object>> categoryList = new ArrayList<>();
-	        List<Map<String, Object>> typeList = new ArrayList<>();
-	        List<Map<String, Object>> amountList = new ArrayList<>();
+	        List<TransactionMstType> categoryList = new ArrayList<TransactionMstType>();
+	        List<TransactionMstType> typeList = new ArrayList<TransactionMstType>();
+	        List<TransactionMstType> amountList = new ArrayList<TransactionMstType>();
 
 	        if (txnCategoryTypeData != null && txnCategoryTypeData.getParamValue() != null) {
 	            String[] catArray = txnCategoryTypeData.getParamValue().split("\\|");
-	            for (int i = 0; i < catArray.length; i++) {
-	                Map<String, Object> item = new HashMap<>();
-	                item.put("id", i + 1);
-	                item.put("name", catArray[i]);
-	                categoryList.add(item);
-	            }
+	            for (String string : catArray) {
+					String[] catString = string.split("=");
+					TransactionMstType obj = new TransactionMstType();
+					obj.setId(Integer.parseInt(catString[0]));
+					obj.setName(catString[1]);
+					
+					categoryList.add(obj);
+ 				}
 	        }
 
 	        if (txnTypeData != null && txnTypeData.getParamValue() != null) {
 	            String[] typeArray = txnTypeData.getParamValue().split("\\|");
-	            for (int i = 0; i < typeArray.length; i++) {
-	                Map<String, Object> item = new HashMap<>();
-	                item.put("id", i + 1);
-	                item.put("name", typeArray[i]);
-	                typeList.add(item);
-	            }
+	            for (String string : typeArray) {
+					String[] typeString = string.split("=");
+					TransactionMstType obj = new TransactionMstType();
+					obj.setId(Integer.parseInt(typeString[0]));
+					obj.setName(typeString[1]);
+					
+					typeList.add(obj);
+ 				}
 	        }
 
 	        if (txnAmntData != null && txnAmntData.getParamValue() != null) {
 	            String[] amntArray = txnAmntData.getParamValue().split("\\|");
-	            for (int i = 0; i < amntArray.length; i++) {
-	                Map<String, Object> item = new HashMap<>();
-	                item.put("id", i + 1);
-	                item.put("name", amntArray[i]);
-	                amountList.add(item);
-	            }
+	            for (String string : amntArray) {
+					String[] amntString = string.split("=");
+					TransactionMstType obj = new TransactionMstType();
+					obj.setId(Integer.parseInt(amntString [0]));
+					obj.setName(amntString[1]);
+					
+					amountList.add(obj);
+ 				}
 	        }
 
 	        // Add processed maps to response object
