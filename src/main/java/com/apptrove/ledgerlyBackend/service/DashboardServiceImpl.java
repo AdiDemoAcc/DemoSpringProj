@@ -52,7 +52,7 @@ public class DashboardServiceImpl implements DashboardService {
 			
 			List<TransactionRecords> txnRecordList = txnRecordsRepository.findByStartDateBetween(startDate, endDate);
 			
-			logger.info("txnRecordList: "+txnRecordList);
+			logger.info("Got {} current month transactions",txnRecordList.size());
 			
 			for (TransactionRecords records : txnRecordList) {
 				BigDecimal amount = records.getTransactionAmnt();
