@@ -15,6 +15,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.apptrove.ledgerlyBackend.entities.ApartmentMst;
 import com.apptrove.ledgerlyBackend.entities.GLAccntMst;
 import com.apptrove.ledgerlyBackend.entities.TransactionMst;
 import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
@@ -249,6 +250,20 @@ public class TxnRecordServiceImpl implements TxnRecordService {
 			e.printStackTrace();
 		}
 		return glAccntList;
+	}
+
+	@Override
+	public List<TransactionRecords> findByApartment(ApartmentMst aptmnt) {
+		List<TransactionRecords> txnRecordList = new ArrayList<TransactionRecords>();
+		try {
+			logger.info("Inside findByApartment method for apartment no: {}",aptmnt.getAptmntNo());
+			txnRecordList = this.txnRecordsRepository.findByAptmntAndAuthStatus(aptmnt,1);
+			logger.info("Exiting findByApartment method after finding {} transactions",txnRecordList.size());
+		} catch (Exception e) {
+			logger.error("An error occurred: {}",e.getMessage());
+			e.printStackTrace();
+		}
+		return txnRecordList;
 	}
 	
 	

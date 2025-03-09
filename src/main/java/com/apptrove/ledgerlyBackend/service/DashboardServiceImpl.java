@@ -63,8 +63,8 @@ public class DashboardServiceImpl implements DashboardService {
 					totalDebit = totalDebit.add(amount);
 				}
 				
-				if (records.getAptmntId() != null) {
-					aptmntPayments.put(records.getAptmntId(), aptmntPayments.getOrDefault(records.getAptmntId(), BigDecimal.ZERO).add(amount));
+				if (records.getAptmnt() != null) {
+					aptmntPayments.put(records.getAptmnt().getAptmntId(), aptmntPayments.getOrDefault(records.getAptmnt().getAptmntId(), BigDecimal.ZERO).add(amount));
 				}
 				
 			}

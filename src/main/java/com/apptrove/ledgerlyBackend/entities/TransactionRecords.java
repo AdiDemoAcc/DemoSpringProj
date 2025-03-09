@@ -29,8 +29,9 @@ public class TransactionRecords {
 	@Column(name = "txn_date")
 	private Date transactionDate;
 	
-	@Column(name = "aptmnt_id")
-	private Integer aptmntId;
+	@ManyToOne
+	@JoinColumn(name = "aptmnt_id", nullable = true)
+	private ApartmentMst aptmnt;
 	
 	@Column(name = "start_dt")
 	private Date startDate;
