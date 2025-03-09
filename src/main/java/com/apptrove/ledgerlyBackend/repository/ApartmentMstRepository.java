@@ -10,4 +10,5 @@ public interface ApartmentMstRepository extends JpaRepository<ApartmentMst, Inte
 
 	public List<ApartmentMst> findByIsActive(Integer isActive);
 	
+	public ApartmentMst findByAptmntIdAndIsActive(Integer aptmntId, Integer isActive);
 }

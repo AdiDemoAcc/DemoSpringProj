@@ -24,7 +24,7 @@ public class ApartmentOccupant {
 	
 	@ManyToOne
 	@JoinColumn(name = "aptmnt_id", nullable = false)
-	private ApartmentMst aptmntMst;
+	private ApartmentMst aptmnt;
 	
 	@Column(name = "occupant_type")
 	private String occupantType;

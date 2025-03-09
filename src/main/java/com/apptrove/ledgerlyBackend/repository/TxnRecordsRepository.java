@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
 import com.apptrove.ledgerlyBackend.entities.GLAccntMst;
+import com.apptrove.ledgerlyBackend.entities.ApartmentMst;
+
 
 
 public interface TxnRecordsRepository extends JpaRepository<TransactionRecords, Integer> {
@@ -19,4 +21,6 @@ public interface TxnRecordsRepository extends JpaRepository<TransactionRecords, 
 	
 	@Query("FROM TransactionRecords WHERE DATE(startDate)=DATE(:startDate) AND DATE(endDate)=DATE(:endDate)")
 	public List<TransactionRecords> findByStartDateBetween(@Param("startDate") Date startDate,@Param("endDate") Date endDate);
+	
+	public List<TransactionRecords> findByAptmntAndAuthStatus(ApartmentMst aptmnt, Integer authStatus);
 }

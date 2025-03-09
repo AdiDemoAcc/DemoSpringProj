@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import com.apptrove.ledgerlyBackend.entities.ApartmentMst;
 import com.apptrove.ledgerlyBackend.entities.ApartmentOccupant;
 import com.apptrove.ledgerlyBackend.entities.BuildingMst;
+import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
 import com.apptrove.ledgerlyBackend.exception.ResourceNotFoundException;
 import com.apptrove.ledgerlyBackend.payload.ApartmentOccupantModel;
+import com.apptrove.ledgerlyBackend.payload.CommReqObj;
 import com.apptrove.ledgerlyBackend.repository.ApartmentMstRepository;
 import com.apptrove.ledgerlyBackend.repository.ApartmentOccupantRepository;
 import com.apptrove.ledgerlyBackend.repository.BuildingMstRepository;
@@ -33,6 +35,8 @@ public class ApartmentServiceImpl implements ApartmentService {
 	private final ApartmentMstRepository apartmentMstRepository;
 	
 	private final ApartmentOccupantRepository apartmentOccupantRepository;
+	
+	private final TxnRecordService txnRecordService;
 	
 	private final ModelMapper modelMapper;
 	
@@ -77,7 +81,7 @@ public class ApartmentServiceImpl implements ApartmentService {
 			
 			ApartmentOccupant apartmentOccupant = modelMapper.map(apartmentOccupantModel, ApartmentOccupant.class);
 			apartmentOccupant.setMakerDt(new Date());
-			apartmentOccupant.setAptmntMst(apartmentMst);
+			apartmentOccupant.setAptmnt(apartmentMst);
 			
 			apartmentOccupant = apartmentOccupantRepository.save(apartmentOccupant);
 			respObject.put("apartmentOccupant", apartmentOccupant);
@@ -100,6 +104,32 @@ public class ApartmentServiceImpl implements ApartmentService {
 			respObject.put("aptmntList", aptmntList);
 		} catch (Exception e) {
 			logger.error("An error occurred: {}",e.getMessage());
+			e.printStackTrace();
+		}
+		return respObject;
+	}
+
+	@Override
+	public Map<String, Object> findAllApartmentData(CommReqObj reqObj) {
+		Map<String, Object> respObject = new HashMap<String, Object>();
+		try {
+			logger.info("Inside findAllApartmentData method with apartment id: {}",reqObj.getAptmntId());
+			
+			ApartmentMst apt = apartmentMstRepository.findById(1).orElse(null);
+			logger.info("Apartment Retrieved: " + apt);
+			
+			ApartmentMst apartmentMst = apartmentMstRepository.findByAptmntIdAndIsActive(reqObj.getAptmntId(), 1);
+			respObject.put("aptmntData", apartmentMst);
+			
+			List<ApartmentOccupant> apartmentOccupantList = apartmentOccupantRepository.findByAptmnt(apartmentMst);
+			respObject.put("occpntData", apartmentOccupantList);
+			
+			List<TransactionRecords> txnRecordList = this.txnRecordService.findByApartment(apartmentMst);
+			respObject.put("txnRecData", txnRecordList);
+			
+			logger.info("Exiting findAllApartmentData method");
+		} catch (Exception e) {
+			logger.info("An error occurred: {}",e.getMessage());
 			e.printStackTrace();
 		}
 		return respObject;

@@ -3,6 +3,7 @@ package com.apptrove.ledgerlyBackend.service;
 import java.util.List;
 import java.util.Map;
 
+import com.apptrove.ledgerlyBackend.entities.ApartmentMst;
 import com.apptrove.ledgerlyBackend.entities.GLAccntMst;
 import com.apptrove.ledgerlyBackend.entities.TransactionRecords;
 import com.apptrove.ledgerlyBackend.payload.GLAccntTxn;
@@ -24,4 +25,6 @@ public interface TxnRecordService {
 	public List<GLAccntTxn> getTransactionsAccordingToGL(Integer glAccntId);
 	
 	public List<GLAccntMst> getAllGlAccnts();
+	
+	public List<TransactionRecords> findByApartment(ApartmentMst aptmnt);
 }
