@@ -11,6 +11,6 @@ public interface ApartmentOccupantRepository extends JpaRepository<ApartmentOccu
 
 	public List<ApartmentOccupant> findByIsActive(Integer isActive);
 	
-	public List<ApartmentOccupant> findByAptmnt(ApartmentMst aptmnt);
+	public List<ApartmentOccupant> findByAptmntAndIsActive(ApartmentMst aptmnt, Integer isActive);
 	
 }

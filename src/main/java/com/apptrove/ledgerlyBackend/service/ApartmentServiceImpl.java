@@ -121,7 +121,7 @@ public class ApartmentServiceImpl implements ApartmentService {
 			ApartmentMst apartmentMst = apartmentMstRepository.findByAptmntIdAndIsActive(reqObj.getAptmntId(), 1);
 			respObject.put("aptmntData", apartmentMst);
 			
-			List<ApartmentOccupant> apartmentOccupantList = apartmentOccupantRepository.findByAptmnt(apartmentMst);
+			List<ApartmentOccupant> apartmentOccupantList = apartmentOccupantRepository.findByAptmntAndIsActive(apartmentMst,1);
 			respObject.put("occpntData", apartmentOccupantList);
 			
 			List<TransactionRecords> txnRecordList = this.txnRecordService.findByApartment(apartmentMst);
