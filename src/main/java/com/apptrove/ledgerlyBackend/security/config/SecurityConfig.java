@@ -54,7 +54,10 @@ public class SecurityConfig {
 		http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/ldgr/T1000/S1001").permitAll().anyRequest().authenticated())
+						auth -> auth
+						.requestMatchers("/ldgr/T1000/S1001").permitAll()
+						.requestMatchers("/actuator/health").permitAll()						
+						.anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
@@ -69,7 +72,7 @@ public class SecurityConfig {
 		configuration.setAllowedMethods(List.of(allowedMethods));
 		configuration.setAllowCredentials(true);
 //		configuration.addExposedHeader("Set-Cookie");
-		
+
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		source.registerCorsConfiguration("/**", configuration);
 
