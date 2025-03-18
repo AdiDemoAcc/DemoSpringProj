@@ -83,7 +83,7 @@ public class TransactionController {
 			recList = txnRecordService.getUnauthorizedTxnList();
 			ApiResponse<List<TransactionRecords>> apiResponse = new ApiResponse<List<TransactionRecords>>();
 			apiResponse.setRespObject(recList);
-			boolean flag = (recList == null || recList.isEmpty()) ? true : false;
+			boolean flag = (recList != null || !recList.isEmpty()) ? true : false;
 			String errorCode = flag ? environment.getProperty("common.request.success.code") : environment.getProperty("common.request.failed.code");
 			String errorMsg = flag ? environment.getProperty("txn.author.request.success.message") : environment.getProperty("txn.author.request.failure.message");
 			apiResponse.setErrorCd(errorCode);
