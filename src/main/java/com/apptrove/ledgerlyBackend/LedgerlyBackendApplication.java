@@ -15,8 +15,8 @@ public class LedgerlyBackendApplication {
 		SpringApplication.run(LedgerlyBackendApplication.class, args);
 	}
 
-	@Bean
-	public ModelMapper modelMapper() {
+    @Bean
+    ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
 }
